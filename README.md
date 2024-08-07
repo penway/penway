@@ -1,7 +1,6 @@
 - 👋 Hi, I’m @penway
-- 👀 I’m interested in Robotics, AI and computational neuroscience
-- 🌱 I’m currently learning Robotics, Deep Learning and Computational Psychology
-- 💞️ I’m looking to collaborate on ...
+- 👀 I’m interested in AI, AGI, CV and computational neuroscience
+- 🌱 I’m currently learning MRI processing, object detection and adversarial attack
 - 📫 How to reach me wang_pengwei@u.nus.edu
 
 <!---
