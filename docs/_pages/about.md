@@ -12,10 +12,8 @@ I am widely interested in technologies about computer science and machenical eng
 - Autonomous Driving Planning
 - Computaional Neuroscience
 
-===
-
 Examples of my previous projects:
 
 - Combustion Formula Student Race Car (Technical Director and Suspension Engineer, 2020-2021)
 - Research on Image Generation Method Based on Convolutional Neural Network (2023, Graduation Paper, top 5%)
-- Website of a weight management and parts management system (2022) | GitHub
+- Website of a weight management and parts management system (2022)
