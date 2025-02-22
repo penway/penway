@@ -26,8 +26,8 @@ author:
   name             : "WANG Pengwei"
   pronouns         : # example: "she/her"  
   bio              : "I am a graduate student majoring in Robotics at CDE, NUS."
-  location         : "Nanjing/Singapore"
-  employer         : ""
+  location         : "Nanjing / Singapore"
+  employer         : "National University of Singapore"
   uri              : # URL
   email            : "wang_pengwei@u.nus.edu" 
 
@@ -294,7 +294,7 @@ sass:
 permalink: /:categories/:title/
 # paginate: 5 # amount of posts to show
 # paginate_path: /page:num/
-timezone: Etc/UTC # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: Etc/GMT+8 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
 
 # Plugins
