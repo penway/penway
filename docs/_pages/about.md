@@ -7,13 +7,4 @@ redirect_from:
   - /about.html
 ---
 
-I am widely interested in technologies about computer science and machenical engineering. I am also interested in computational neuroscience and cognitive science. Apart from course projects, I am currently studying on:
-
-- Autonomous Driving Planning
-- Computaional Neuroscience
-
-Examples of my previous projects:
-
-- Combustion Formula Student Race Car (Technical Director and Suspension Engineer, 2020-2021)
-- Research on Image Generation Method Based on Convolutional Neural Network (2023, Graduation Paper, top 5%)
-- Website of a weight management and parts management system (2022)
+Hi! I am a student just graduated from National University of Singapore. I am interested in topics about intelligence, both natural and artificial. My previous research were about deep learning-based medical image analysis, knee angle analysis for prostheses and image generation.
