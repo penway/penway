@@ -57,15 +57,14 @@
         mark.after(canvas);
         const observer = new ResizeObserver(() => {
           logo.resize(stage.clientWidth, stage.clientHeight);
+          if (logo.t === logo.END) logo.render(logo.END, "rest");
         });
         observer.observe(stage);
         const start = performance.now();
         function frame(now) {
           const t = (now - start) / 1000;
           if (t >= logo.END) {
-            observer.disconnect();
-            canvas.remove();
-            logo.gl.getExtension("WEBGL_lose_context")?.loseContext();
+            logo.render(logo.END, "rest");
             return;
           }
           logo.render(t, "anim");
