@@ -61,7 +61,22 @@ export default function App() {
             <h2>I work on explainable computer vision for medical imaging.</h2>
           </header>
 
-          <section className="selected-work" aria-label="Current project">
+          <section className="selected-work" aria-label="Current projects">
+            <div className="lism-card-wrap">
+              <a className="project-card lism-card" href="/projects/lism/" data-cursor="project">
+                <img className="project-card__arrow" src="/projects/lism/arrow.svg" width="144" height="64" alt="" />
+                <h3><img src="/projects/lism/logo.svg" alt="LiSM" /></h3>
+                <ul className="lism-keywords">
+                  <li>Natural images</li>
+                  <li>Generative models</li>
+                  <li>Controllable generation</li>
+                </ul>
+                <picture className="lism-preview" aria-hidden="true">
+                  <source media="(prefers-reduced-motion: reduce)" srcSet="/projects/lism/segmentation-still.webp" />
+                  <img src="/projects/lism/segmentation-loop.webp" width="352" height="256" alt="" />
+                </picture>
+              </a>
+            </div>
             <a
               className="project-card"
               href="/projects/pixel-level-fiqa/"
