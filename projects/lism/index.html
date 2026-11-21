@@ -5,11 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>LiSM</title>
     <link rel="stylesheet" href="/src/styles.css" />
+    <style>
+      main {
+        position: relative;
+        display: grid;
+        grid-template-rows: 1fr auto 1fr;
+        justify-items: center;
+        height: 100dvh;
+      }
+      .logo-stage { grid-row: 2; margin: 0; }
+      .logo-stage img { display: block; width: min(90vw, 120dvh); }
+      .logo-stage canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .project-note {
+        grid-row: 3;
+        position: relative;
+        align-self: start;
+        margin: clamp(12px, 2dvh, 20px) 1rem 0;
+        text-align: center;
+      }
+      .project-note a { white-space: nowrap; }
+    </style>
   </head>
   <body>
-    <main class="content-panel">
-      <a href="/">← Home</a>
-      <h1>LiSM</h1>
+    <main>
+      <h1 class="logo-stage">
+        <img src="/projects/lism/logo.svg" alt="LiSM" />
+      </h1>
+      <p class="project-note">Project page and code coming soon, <a href="/">go back to homepage</a></p>
     </main>
+    <script type="module">
+      async function playLogo() {
+        const stage = document.querySelector("main");
+        const mark = stage.querySelector(".logo-stage img");
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        const { create } = await import("./logo-scene.js");
+        const canvas = document.createElement("canvas");
+        canvas.setAttribute("aria-hidden", "true");
+        const logo = create({
+          canvas, width: stage.clientWidth, height: stage.clientHeight,
+          markWidth: () => mark.getBoundingClientRect().width, setStyle: false,
+        });
+        logo.startX = logo.offscreenStartX();
+        logo.render(0, "anim");
+        mark.after(canvas);
+        const observer = new ResizeObserver(() => {
+          logo.resize(stage.clientWidth, stage.clientHeight);
+        });
+        observer.observe(stage);
+        const start = performance.now();
+        function frame(now) {
+          const t = (now - start) / 1000;
+          if (t >= logo.END) {
+            observer.disconnect();
+            canvas.remove();
+            logo.gl.getExtension("WEBGL_lose_context")?.loseContext();
+            return;
+          }
+          logo.render(t, "anim");
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      playLogo().catch(() => { /* The static SVG is visible without WebGL. */ });
+    </script>
   </body>
 </html>
