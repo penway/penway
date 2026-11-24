@@ -1,0 +1,62 @@
+[
+  {
+    "pose": "zebra_00_native_zebra",
+    "species": "zebra",
+    "source": "zebra",
+    "images": [
+      "0007",
+      "0008",
+      "0003",
+      "0004",
+      "0005"
+    ]
+  },
+  {
+    "pose": "tiger_01_cross_horse",
+    "species": "horse",
+    "source": "tiger",
+    "images": [
+      "0235",
+      "0236",
+      "0238",
+      "0239",
+      "0233"
+    ]
+  },
+  {
+    "pose": "lion_06_native_lion",
+    "species": "lion",
+    "source": "lion",
+    "images": [
+      "0524",
+      "0525",
+      "0527",
+      "0528",
+      "0522"
+    ]
+  },
+  {
+    "pose": "elephant_01_native_elephant",
+    "species": "elephant",
+    "source": "elephant",
+    "images": [
+      "0829",
+      "0823",
+      "0825",
+      "0826",
+      "0820"
+    ]
+  },
+  {
+    "pose": "elephant_01_cross_horse",
+    "species": "horse",
+    "source": "elephant",
+    "images": [
+      "0831",
+      "0832",
+      "0834",
+      "0835",
+      "0836"
+    ]
+  }
+]

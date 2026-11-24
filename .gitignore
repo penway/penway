@@ -11,3 +11,5 @@ dist/
 
 .vscode/
 .idea/
+
+.lism-dislikes.json*

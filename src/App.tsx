@@ -62,8 +62,8 @@ export default function App() {
           </header>
 
           <section className="selected-work" aria-label="Current projects">
-            <div className="lism-card-wrap">
-              <a className="project-card lism-card" href="/projects/lism/" data-cursor="project">
+            <a className="lism-link" href="/lism/">
+              <div className="project-card lism-card">
                 <img className="project-card__arrow" src="/projects/lism/arrow.svg" width="144" height="64" alt="" />
                 <h3><img src="/projects/lism/logo.svg" alt="LiSM" /></h3>
                 <ul className="lism-keywords">
@@ -72,11 +72,13 @@ export default function App() {
                   <li>Controllable generation</li>
                 </ul>
                 <picture className="lism-preview" aria-hidden="true">
+                  <source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcSet="/projects/lism/composition/0007.webp" width="256" height="256" />
+                  <source media="(max-width: 600px)" srcSet="/projects/lism/zebra-scenes.webp" width="256" height="256" />
                   <source media="(prefers-reduced-motion: reduce)" srcSet="/projects/lism/segmentation-still.webp" />
                   <img src="/projects/lism/segmentation-loop.webp" width="352" height="256" alt="" />
                 </picture>
-              </a>
-            </div>
+              </div>
+            </a>
             <a
               className="project-card"
               href="/projects/pixel-level-fiqa/"

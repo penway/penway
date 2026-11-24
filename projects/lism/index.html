@@ -7,42 +7,165 @@
     <link rel="stylesheet" href="/src/styles.css" />
     <style>
       main {
-        position: relative;
+        min-height: 100dvh;
         display: grid;
-        grid-template-rows: 1fr auto 1fr;
-        justify-items: center;
-        height: 100dvh;
+        grid-template-rows: minmax(13rem, 33dvh) 1fr auto;
+        font-family: "Source Sans 3", Arial, sans-serif;
+        font-weight: 600;
       }
-      .logo-stage { grid-row: 2; margin: 0; }
-      .logo-stage img { display: block; width: min(90vw, 120dvh); }
-      .logo-stage canvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
+      header { display: grid; grid-template-rows: 1fr auto auto; padding-bottom: 1.25rem; }
+      .logo-stage { position: relative; display: grid; place-items: center; margin: 0; }
+      .logo-stage img { width: min(60vw, 40dvh); }
+      .logo-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+      .authors { display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem 2em; margin: 0; padding: .25rem 1rem .5rem; list-style: none; font-size: 1.125rem; line-height: 1.25; text-align: center; }
+      /* Links are a step smaller than the names and set apart from them. */
+      .resources { display: flex; justify-content: center; gap: clamp(1rem, 3vw, 3rem); margin-top: .75rem; font-size: 1rem; }
+      .resources a { text-decoration: none; }
+      .resources a:hover, .resources a:focus-visible { text-decoration: underline; text-underline-offset: .2em; }
+      .panels { display: grid; grid-template-columns: 1fr 1fr; border-block: 1px solid; }
+      .panels > * { display: grid; container-type: inline-size; grid-template-rows: auto clamp(1.8rem, 2.5vw, 3.6rem) minmax(12rem, 1fr); padding: clamp(1.5rem, 5vw, 6rem); padding-bottom: 1rem; }
+      .gallery { border-left: 1px solid; text-decoration: none; }
+      .gallery:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
+      h2, .edition { margin: 0; }
+      .panels .paper {
+        font-family: "Source Serif 4", Georgia, serif;
       }
-      .project-note {
+      .paper svg, .composition {
         grid-row: 3;
-        position: relative;
-        align-self: start;
-        margin: clamp(12px, 2dvh, 20px) 1rem 0;
-        text-align: center;
+        place-self: center;
+        width: min(100%, 42dvh);
+        aspect-ratio: 1;
+        margin-top: 1rem;
       }
-      .project-note a { white-space: nowrap; }
+      h2 { font-size: min(8.4cqi, 7rem); font-weight: inherit; line-height: 1.12; white-space: nowrap; }
+      .gallery h2 { font-family: "Clash Display", sans-serif; font-weight: 500; }
+      .composition {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 2px;
+      }
+      .composition img { display: block; width: 100%; }
+      .composition > span { position: relative; }
+      .pose-overlay { position: absolute; inset: 0; opacity: 0; filter: drop-shadow(0 0 1px #111); }
+      @media (hover: hover) and (pointer: fine) {
+        .composition > span:hover .pose-overlay { opacity: 1; }
+      }
+      .edition { margin-top: 0.5em; font-size: clamp(1rem, 3.5cqi, 2rem); font-style: italic; }
+      /* Acknowledgements are logos only: school and lab on one row, funders on another. */
+      footer, .credit-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem 1.5rem; }
+      footer { padding: 1rem; }
+      footer a { display: block; text-decoration: none; }
+      footer img { display: block; width: auto; height: var(--mark, 2rem); }
+      /* Sized by eye: each mark is as tall as its smallest text needs. */
+      .mark-meduni { --mark: 1.9rem; }
+      .mark-cd { --mark: 2.75rem; }
+      .mark-erc { --mark: 3.5rem; }
+      .lab-wordmark {
+        color: #16191d;
+        font: 700 1.375rem/1.1 Arial, sans-serif;
+        letter-spacing: -.04em;
+        white-space: nowrap;
+      }
+      /* The lab's own site sets "Lab" in this blue. */
+      .lab-wordmark span { color: #1a5f92; }
+      @media (min-width: 601px) and (min-height: 500px) {
+        main { height: 100dvh; grid-template-rows: 33dvh minmax(0, 1fr) auto; }
+        .panels { grid-template-rows: minmax(0, 1fr); }
+        .panels > * {
+          grid-template-rows: auto clamp(1.8rem, 2.5vw, 3.6rem) minmax(0, 1fr);
+          padding-top: min(5vw, 4dvh);
+        }
+        .paper svg, .composition {
+          height: min(42dvh, calc(100% - 1rem), 100cqi);
+          width: auto;
+          min-width: 0;
+          min-height: 0;
+        }
+      }
+      @media (max-width: 600px) {
+        .authors { display: grid; grid-template-columns: auto auto; }
+        .panels { grid-template-columns: 1fr; grid-template-rows: auto auto; }
+        .paper svg, .composition { width: min(100%, 42svh); }
+        .gallery { border-left: 0; border-top: 1px solid; }
+      }
+      /* Wide screens: one bar resting on the rule under the logo, links at its left end and the
+         school and lab at its right. The funders keep a slim strip at the bottom of the page. */
+      @media (min-width: 900px) and (min-height: 600px) {
+        main {
+          --edge: clamp(1.5rem, 5vw, 6rem);
+          --bar: 2.25rem;
+          --head: calc(33dvh + 2.25rem);
+          position: relative;
+          grid-template-rows: var(--head) minmax(0, 1fr) auto;
+        }
+        /* Reserve the bar's strip so the logo stage, and its opaque canvas, stay above it. */
+        header { padding-bottom: calc(var(--bar) + 1.25rem); }
+        .resources, .credit-home {
+          position: absolute;
+          top: calc(var(--head) - var(--bar) - .75rem);
+          height: var(--bar);
+          flex-wrap: nowrap;
+          align-items: center;
+        }
+        /* Names belong to the logo, so they keep more space below than the bar keeps above. */
+        .authors { padding-bottom: 1.25rem; }
+        .resources { left: var(--edge); gap: 2rem; margin-top: 0; }
+        .credit-home { right: var(--edge); gap: 1.75rem; }
+        footer { padding: .6rem 1rem; }
+        .credit-funding { flex-wrap: nowrap; gap: 2.5rem; }
+        .credit-funding .mark-cd { --mark: 2.4rem; }
+        .credit-funding .mark-erc { --mark: 3rem; }
+      }
     </style>
   </head>
   <body>
     <main>
-      <h1 class="logo-stage">
-        <img src="/projects/lism/logo.svg" alt="LiSM" />
-      </h1>
-      <p class="project-note">Project page and code coming soon, <a href="/">go back to homepage</a></p>
+      <header>
+        <h1 class="logo-stage"><img src="/projects/lism/logo.svg" alt="LiSM" /></h1>
+        <ul class="authors" aria-label="Authors">
+          <li>Pengwei Wang</li>
+          <li>José Morano</li>
+          <li>Botond Fazekas</li>
+          <li>Hrvoje Bogunović</li>
+        </ul>
+        <div class="resources">
+          <a href="https://arxiv.org">arXiv</a>
+          <a href="https://github.com">GitHub</a>
+          <a href="https://huggingface.co">Hugging Face</a>
+        </div>
+      </header>
+      <div class="panels">
+        <section class="paper" tabindex="0" aria-labelledby="paper-title">
+          <h2 id="paper-title">Linear Probes can Guide</h2>
+          <p class="edition">Director’s Cut: an HTML paper</p>
+          <svg viewBox="0 -11.25 335 335" role="img" aria-label="LiSM trajectory through projected cat and dog features"></svg>
+        </section>
+        <a class="gallery" href="./gallery/">
+          <h2>Gallery</h2>
+          <div class="composition" aria-hidden="true"></div>
+        </a>
+      </div>
+      <footer aria-label="Affiliation and funding">
+        <div class="credit-row credit-home">
+          <a class="mark-meduni" href="https://www.meduniwien.ac.at"><img src="/logos/meduni-wien.svg" width="356" height="76" alt="Medical University of Vienna" /></a>
+          <a class="lab-wordmark" href="https://bogunovic-lab.cynapse.at">Bogunović <span>Lab</span></a>
+        </div>
+        <div class="credit-row credit-funding">
+          <a class="mark-cd" href="https://www.cdg.ac.at"><img src="/logos/cd-forschungsgesellschaft.png" width="560" height="237" alt="Christian Doppler Forschungsgesellschaft" /></a>
+          <a class="mark-erc" href="https://erc.europa.eu"><img src="/logos/erc-eu.png" width="640" height="276" alt="Funded by the European Union, European Research Council" /></a>
+        </div>
+      </footer>
     </main>
     <script type="module">
+      import "./probe-figure.js";
+      import "./composition.js";
+      import "@fontsource/source-sans-3/latin-600.css";
+      import "@fontsource/source-serif-4/latin-600.css";
+      import "@fontsource/source-serif-4/latin-600-italic.css";
+
       async function playLogo() {
-        const stage = document.querySelector("main");
-        const mark = stage.querySelector(".logo-stage img");
+        const stage = document.querySelector(".logo-stage");
+        const mark = stage.querySelector("img");
         if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         const { create } = await import("./logo-scene.js");
