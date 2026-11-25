@@ -62,20 +62,25 @@ export function create(opts) {
 
   var renderer = new THREE.WebGLRenderer({ canvas: opts.canvas, antialias: false, alpha: false, preserveDrawingBuffer: true });
   renderer.setClearColor(0xffffff, 1);
-  renderer.setPixelRatio(opts.pixelRatio || Math.min(window.devicePixelRatio || 1, 2));
+  // Browser zoom changes devicePixelRatio, so it is read again on every resize, or the logo goes soft after zooming.
+  function pixelRatio() { return opts.pixelRatio || Math.min(window.devicePixelRatio || 1, 3); }
+  renderer.setPixelRatio(pixelRatio());
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   var scene = new THREE.Scene();
   var cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 1, 3000);
   cam.position.set(CX, CY, 1500); cam.lookAt(CX, CY, 0);
   var W = 1, H = 1, S = 1, curT = 0;
-  // opts.centerY: where the logo's centre sits, as a share of the height from the top (default .5)
-  var CY_FRAC = opts.centerY == null ? 0.5 : opts.centerY;
+  // opts.centerY: where the logo's centre sits, as a share of the height from the top (default .5); may be a function
   function resize(w, h) {
+    var CY_FRAC = typeof opts.centerY === 'function' ? opts.centerY() : (opts.centerY == null ? 0.5 : opts.centerY);
     W = w; H = h; S = opts.markWidth() / 390;
+    renderer.setPixelRatio(pixelRatio());
     renderer.setSize(W, H, opts.setStyle !== false); makeTargets();
     // bounds are relative to the camera, which sits over the logo
-    cam.left = -W / (2 * S); cam.right = W / (2 * S); cam.top = CY_FRAC * H / S; cam.bottom = -(1 - CY_FRAC) * H / S;
+    // opts.centerX: where the logo's centre sits, as a share of the width from the left (default .5); may be a function
+    var fx = typeof opts.centerX === 'function' ? opts.centerX() : (opts.centerX == null ? 0.5 : opts.centerX);
+    cam.left = -fx * W / S; cam.right = (1 - fx) * W / S; cam.top = CY_FRAC * H / S; cam.bottom = -(1 - CY_FRAC) * H / S;
     cam.updateProjectionMatrix();
   }
 
@@ -293,6 +298,6 @@ export function create(opts) {
     setSamples: function (n) { nAnim = n; N_ANIM = n; },
     get startX() { return startX; },
     set startX(x) { startX = x; },
-    offscreenStartX: function () { return Math.max(480, (W - (W - 390 * S) / 2) / S + 30); },
+    offscreenStartX: function () { return Math.max(480, CX + cam.right + 30); },   // just past the right edge of the view
   };
 }

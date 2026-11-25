@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Linear Probes can Guide: Training-Free Control of Representation Generators · LiSM</title>
+    <style>
+      /* A placeholder until the HTML paper is written: the title, a notice, and the way to the arXiv version.
+         The header matches the gallery's: the logo leads back to the LiSM page. */
+      * { box-sizing: border-box; }
+      body { max-width: 2560px; min-height: 100dvh; margin: 0 auto; display: grid; grid-template-rows: auto 1fr; color: #151515; background: #fff; font-family: "Source Serif 4", Georgia, serif; font-weight: 600; }
+      header { display: flex; align-items: center; justify-content: space-between; margin: 0 2vw; padding: 1rem 0; border-bottom: 1px solid; }
+      header img { display: block; height: 2rem; }
+      header a { transition: opacity 120ms ease-out; }
+      @media (hover: hover) { header a:hover { opacity: .6; } }
+      header a:active { opacity: .4; }
+      header p { margin: 0; font-size: 1.25rem; font-style: italic; }
+      main { align-self: center; justify-self: center; width: min(100% - 3rem, 76rem); padding: 3rem 0 5rem; container-type: inline-size; }
+      /* The full title, in two lines where the window is wide enough: the type follows the page's width so
+         that the longer second line just fits. Narrower than that, each part wraps on its own. */
+      h1 { margin: 0; font-size: clamp(1.75rem, 3.9cqi, 3rem); font-weight: 600; line-height: 1.12; }
+      h1 > span { display: block; text-wrap: balance; }
+      .notice { max-width: 42rem; margin: 2rem 0 0; font-size: clamp(1.15rem, 2.2vw, 1.5rem); line-height: 1.4; }
+      .notice em { display: block; }
+      /* The same outlined block as the LiSM page's links: it fills in when pointed at. */
+      .read { display: inline-block; margin-top: 2rem; padding: .5rem 1.2rem; box-shadow: inset 0 0 0 1.5px #111; color: #111; font: 600 1.05rem/1.25 "Source Sans 3", Arial, sans-serif; text-decoration: none; transition: background-color 120ms ease-out, color 120ms ease-out; }
+      @media (hover: hover) { .read:hover { background: #111; color: #fff; } }
+      .read:active { background: #111; color: #fff; }
+      .read:focus-visible, header a:focus-visible { outline: 2px solid #151515; outline-offset: 3px; }
+      /* Arriving from the LiSM page (composition.js), whose last frame was white with only the logo and
+         "Linear Probes can Guide", in the places this page draws them. Nothing is drawn until the logo and
+         the type are ready (.landed); the first frame then matches that one, and the rest fades in. */
+      header { transition: border-color 400ms ease-out; }
+      header p, h1 .rest, h1 > span + span, .notice, .read { transition: opacity 400ms ease-out, background-color 120ms ease-out, color 120ms ease-out; }
+      html.arriving:not(.landed) body { visibility: hidden; }
+      html.arriving header { border-bottom-color: transparent; }
+      html.arriving :is(header p, h1 .rest, h1 > span + span, .notice, .read) { opacity: 0; }
+    </style>
+    <script>
+      if (new URLSearchParams(location.search).get("from") === "lism") {
+        document.documentElement.classList.add("arriving");
+        history.replaceState(null, "", location.pathname);
+        // Never stay blank: after 1.5s show the page whatever has loaded.
+        setTimeout(() => document.documentElement.classList.remove("arriving"), 1500);
+      }
+      // `?measure`: this page is the LiSM page's hidden frame, which asks where the logo and the first
+      // part of the title are drawn at the reader's window size. No title box if that part wraps.
+      window.lismLanding = () => {
+        const box = element => element.getBoundingClientRect().toJSON();
+        const lead = document.querySelector("h1 .lead");
+        return {
+          logo: box(document.querySelector("header img")),
+          title: lead.getClientRects().length === 1 ? { ...box(lead), fontSize: parseFloat(getComputedStyle(lead).fontSize) } : null,
+        };
+      };
+    </script>
+  </head>
+  <body>
+    <header>
+      <a href="../" aria-label="Back to LiSM"><img src="/projects/lism/logo.svg" alt="LiSM" /></a>
+      <p>Director’s Cut</p>
+    </header>
+    <main>
+      <h1><span><span class="lead">Linear Probes can Guide</span><span class="rest">:</span></span> <span>Training-Free Control of Representation Generators</span></h1>
+      <p class="notice"><em>Under construction.</em> The HTML paper is still being written. For now, read the paper on arXiv.</p>
+      <a class="read" href="https://arxiv.org/abs/2611.33037">Read on arXiv</a>
+    </main>
+    <script type="module">
+      import "@fontsource/source-sans-3/latin-600.css";
+      import "@fontsource/source-serif-4/latin-600.css";
+      import "@fontsource/source-serif-4/latin-600-italic.css";
+
+      // The type's styles are in place now, so the arriving page can wait for the faces it draws first.
+      const root = document.documentElement;
+      if (root.classList.contains("arriving")) {
+        const ready = [document.querySelector("header img").decode(), document.fonts.load('600 32px "Source Serif 4"', "Linear Probes can Guide")];
+        Promise.all(ready.map(step => step.catch(() => {}))).then(() => {
+          root.classList.add("landed");
+          requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("arriving")));
+        });
+      } else document.fonts.load('600 32px "Source Serif 4"');
+    </script>
+  </body>
+</html>

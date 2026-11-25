@@ -13,3 +13,11 @@ dist/
 .idea/
 
 .lism-dislikes.json*
+
+# Local gallery curation
+/vite.picker.local.ts
+/projects/lism/picker/
+/projects/lism/*-review.json
+/projects/lism/gallery/opening.json
+/projects/lism/gallery/catalog.mjs
+/public/projects/lism/*/manifest.json

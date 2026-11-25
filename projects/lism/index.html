@@ -7,25 +7,49 @@
     <link rel="stylesheet" href="/src/styles.css" />
     <style>
       main {
+        /* Type, logo, marks and spacing share one unit. --s is 1rem up to about 1280x950; beyond that
+           it grows at half the window's rate, up to 1.5rem, so large screens get larger type. Growing
+           more slowly than the window is what lets browser zoom still enlarge the page: zooming
+           shrinks the window the page sees, and a unit that followed the window fully would cancel it. */
+        --s: clamp(1rem, .5rem + min(100dvh / 118.75, 100vw / 160), 1.5rem);
         min-height: 100dvh;
         display: grid;
-        grid-template-rows: minmax(13rem, 33dvh) 1fr auto;
+        grid-template-rows: auto 1fr auto;
         font-family: "Source Sans 3", Arial, sans-serif;
         font-weight: 600;
       }
-      header { display: grid; grid-template-rows: 1fr auto auto; padding-bottom: 1.25rem; }
-      .logo-stage { position: relative; display: grid; place-items: center; margin: 0; }
-      .logo-stage img { width: min(60vw, 40dvh); }
+      /* Base layout, for narrow windows: one centred column that scrolls. */
+      header { display: grid; padding-bottom: calc(1.5 * var(--s)); }
+      .logo-stage { position: relative; display: grid; place-items: center; margin: 0; padding-block: calc(2 * var(--s)) calc(1.25 * var(--s)); }
+      .logo-stage img { width: min(60vw, calc(25 * var(--s))); }
       .logo-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-      .authors { display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem 2em; margin: 0; padding: .25rem 1rem .5rem; list-style: none; font-size: 1.125rem; line-height: 1.25; text-align: center; }
+      .authors { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(.25 * var(--s)) 2em; margin: 0; padding: calc(.25 * var(--s)) var(--s) calc(.5 * var(--s)); list-style: none; font-size: calc(1.125 * var(--s)); line-height: 1.25; text-align: center; }
+      /* The first author's name leads back to the homepage. It looks like the other names until pointed at. */
+      .authors a { text-decoration: none; transition: opacity 120ms ease-out; }
+      @media (hover: hover) { .authors a:hover { opacity: .6; } }
+      .authors a:active { opacity: .4; }
+      .authors a:focus-visible { outline: 2px solid #111; outline-offset: 2px; }
       /* Links are a step smaller than the names and set apart from them. */
-      .resources { display: flex; justify-content: center; gap: clamp(1rem, 3vw, 3rem); margin-top: .75rem; font-size: 1rem; }
-      .resources a { text-decoration: none; }
-      .resources a:hover, .resources a:focus-visible { text-decoration: underline; text-underline-offset: .2em; }
-      .panels { display: grid; grid-template-columns: 1fr 1fr; border-block: 1px solid; }
-      .panels > * { display: grid; container-type: inline-size; grid-template-rows: auto clamp(1.8rem, 2.5vw, 3.6rem) minmax(12rem, 1fr); padding: clamp(1.5rem, 5vw, 6rem); padding-bottom: 1rem; }
-      .gallery { border-left: 1px solid; text-decoration: none; }
-      .gallery:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
+      .resources { display: flex; justify-content: center; gap: calc(.6 * var(--s)); margin-top: calc(.75 * var(--s)); font-size: var(--s); }
+      /* Outlined blocks in the logo's black; they fill in when pointed at. */
+      .resources a {
+        padding: calc(.35 * var(--s)) calc(.9 * var(--s));
+        box-shadow: inset 0 0 0 1.5px #111;
+        color: #111;
+        line-height: 1.25;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background-color 120ms ease-out, color 120ms ease-out, transform 80ms ease-out;
+      }
+      @media (hover: hover) { .resources a:hover { background: #111; color: #fff; } }
+      .resources a:focus-visible { outline: 2px solid #111; outline-offset: 2px; }
+      .resources a:active { transform: translateY(1px); }
+      @media (prefers-reduced-motion: reduce) { .resources a { transition: none; } }
+      .panels { display: grid; border-block: 1px solid; }
+      .panels > * { display: grid; container-type: inline-size; grid-template-rows: auto clamp(calc(1.8 * var(--s)), 2.5vw, calc(3.6 * var(--s))) minmax(calc(12 * var(--s)), 1fr); --gutter: clamp(calc(1.5 * var(--s)), 5vw, calc(3 * var(--s))); padding: var(--gutter) max(var(--gutter), calc((100% - 46 * var(--s)) / 2)) calc(2 * var(--s)); }
+      .gallery { border-top: 1px solid; }
+      .panels > a { text-decoration: none; }
+      .panels > a:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
       h2, .edition { margin: 0; }
       .panels .paper {
         font-family: "Source Serif 4", Georgia, serif;
@@ -33,11 +57,13 @@
       .paper svg, .composition {
         grid-row: 3;
         place-self: center;
-        width: min(100%, 42dvh);
+        width: min(100%, 60svh);
         aspect-ratio: 1;
-        margin-top: 1rem;
+        margin-top: var(--s);
       }
-      h2 { font-size: min(8.4cqi, 7rem); font-weight: inherit; line-height: 1.12; white-space: nowrap; }
+      /* Sized to fit the panel; as a safety net (a stale size right after zooming, say) a title is
+         clipped at the panel's edge instead of widening the panel or running into its neighbour. */
+      h2 { font-size: min(8.4cqi, calc(7 * var(--s))); font-weight: inherit; line-height: 1.12; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding-bottom: .12em; margin-bottom: -.12em; }
       .gallery h2 { font-family: "Clash Display", sans-serif; font-weight: 500; }
       .composition {
         display: grid;
@@ -50,72 +76,88 @@
       @media (hover: hover) and (pointer: fine) {
         .composition > span:hover .pose-overlay { opacity: 1; }
       }
-      .edition { margin-top: 0.5em; font-size: clamp(1rem, 3.5cqi, 2rem); font-style: italic; }
+      .edition { margin-top: 0.5em; font-size: clamp(var(--s), 3.5cqi, calc(2 * var(--s))); font-style: italic; }
       /* Acknowledgements are logos only: school and lab on one row, funders on another. */
-      footer, .credit-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem 1.5rem; }
-      footer { padding: 1rem; }
+      footer, .credit-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: calc(.75 * var(--s)) calc(1.5 * var(--s)); }
+      footer { padding: var(--s); }
       footer a { display: block; text-decoration: none; }
-      footer img { display: block; width: auto; height: var(--mark, 2rem); }
+      footer img { display: block; width: auto; height: var(--mark, calc(2 * var(--s))); }
       /* Sized by eye: each mark is as tall as its smallest text needs. */
-      .mark-meduni { --mark: 1.9rem; }
-      .mark-cd { --mark: 2.75rem; }
-      .mark-erc { --mark: 3.5rem; }
+      .mark-meduni { --mark: calc(1.9 * var(--s)); }
+      .mark-cd { --mark: calc(2.75 * var(--s)); }
+      .mark-erc { --mark: calc(3.5 * var(--s)); }
       .lab-wordmark {
         color: #16191d;
-        font: 700 1.375rem/1.1 Arial, sans-serif;
+        font: 700 calc(1.375 * var(--s))/1.1 Arial, sans-serif;
         letter-spacing: -.04em;
         white-space: nowrap;
       }
       /* The lab's own site sets "Lab" in this blue. */
       .lab-wordmark span { color: #1a5f92; }
-      @media (min-width: 601px) and (min-height: 500px) {
-        main { height: 100dvh; grid-template-rows: 33dvh minmax(0, 1fr) auto; }
-        .panels { grid-template-rows: minmax(0, 1fr); }
-        .panels > * {
-          grid-template-rows: auto clamp(1.8rem, 2.5vw, 3.6rem) minmax(0, 1fr);
-          padding-top: min(5vw, 4dvh);
-        }
-        .paper svg, .composition {
-          height: min(42dvh, calc(100% - 1rem), 100cqi);
-          width: auto;
-          min-width: 0;
-          min-height: 0;
-        }
-      }
       @media (max-width: 600px) {
         .authors { display: grid; grid-template-columns: auto auto; }
-        .panels { grid-template-columns: 1fr; grid-template-rows: auto auto; }
-        .paper svg, .composition { width: min(100%, 42svh); }
-        .gallery { border-left: 0; border-top: 1px solid; }
       }
-      /* Wide screens: one bar resting on the rule under the logo, links at its left end and the
-         school and lab at its right. The funders keep a slim strip at the bottom of the page. */
-      @media (min-width: 900px) and (min-height: 600px) {
+      /* From 1100px wide: no header band. Everything about the work sits in a left column (logo, authors
+         and links at the top; school, lab and funders at the foot) and the panels fill the rest of one
+         screen. The layout never depends on the window's height: a window too short for the column
+         scrolls instead. The logo's stage is the top of the column, so the ball rolls in from the
+         column's right edge. */
+      @media (min-width: 1100px) {
         main {
-          --edge: clamp(1.5rem, 5vw, 6rem);
-          --bar: 2.25rem;
-          --head: calc(33dvh + 2.25rem);
-          position: relative;
-          grid-template-rows: var(--head) minmax(0, 1fr) auto;
+          --pad: calc(2 * var(--s));
+          /* Sized by --s, so the column and its logo grow with zoom; never narrower than the three
+             links, or the school and lab, on one line. */
+          --side: clamp(calc(23.5 * var(--s)), 42vw, calc(27 * var(--s)));
+          --logo-w: calc(var(--side) - 2 * var(--pad));
+          --logo-h: calc(var(--logo-w) * 160 / 390);
+          /* The column's own height: the logo plus the fixed rows around it. */
+          --column: calc(var(--logo-h) + 24.5 * var(--s));
+          height: max(100dvh, var(--column));
+          grid-template-columns: var(--side) minmax(0, 1fr);
+          grid-template-rows: minmax(0, 1fr) auto;
         }
-        /* Reserve the bar's strip so the logo stage, and its opaque canvas, stay above it. */
-        header { padding-bottom: calc(var(--bar) + 1.25rem); }
-        .resources, .credit-home {
-          position: absolute;
-          top: calc(var(--head) - var(--bar) - .75rem);
-          height: var(--bar);
-          flex-wrap: nowrap;
-          align-items: center;
+        header { grid-area: 1 / 1; display: flex; flex-direction: column; min-height: 0; padding: 0; }
+        footer { grid-area: 2 / 1; flex-direction: column; align-items: flex-start; gap: calc(1.1 * var(--s)); padding: var(--pad); }
+        .logo-stage { padding: calc(2.5 * var(--s)) var(--pad) calc(1.75 * var(--s)); justify-items: start; }
+        .logo-stage img { width: var(--logo-w); }
+        .authors { display: grid; justify-content: start; justify-items: start; gap: calc(.2 * var(--s)); padding: 0 var(--pad); text-align: left; }
+        .resources { justify-content: flex-start; margin-top: calc(1.5 * var(--s)); padding: 0 var(--pad); }
+        .credit-row { justify-content: flex-start; }
+        .credit-home { gap: calc(.75 * var(--s)) calc(1.1 * var(--s)); }
+        .mark-cd { --mark: calc(2.4 * var(--s)); }
+        .mark-erc { --mark: calc(3 * var(--s)); }
+        /* Squarer windows: paper above gallery. */
+        .panels { grid-area: 1 / 2 / span 2; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); border-block: 0; border-left: 1px solid; }
+        .panels > * {
+          grid-template-rows: auto calc(.75 * var(--s)) minmax(0, 1fr);
+          padding: min(4vw, 3.5dvh) clamp(calc(1.5 * var(--s)), 3vw, calc(4 * var(--s))) var(--s);
         }
-        /* Names belong to the logo, so they keep more space below than the bar keeps above. */
-        .authors { padding-bottom: 1.25rem; }
-        .resources { left: var(--edge); gap: 2rem; margin-top: 0; }
-        .credit-home { right: var(--edge); gap: 1.75rem; }
-        footer { padding: .6rem 1rem; }
-        .credit-funding { flex-wrap: nowrap; gap: 2.5rem; }
-        .credit-funding .mark-cd { --mark: 2.4rem; }
-        .credit-funding .mark-erc { --mark: 3rem; }
+        /* Titles and figures follow the panel's height here, not its width. Titles also stop at 4 units,
+           so that zooming out shrinks them along with the column's text. */
+        h2 { font-size: min(8.4cqi, calc(4 * var(--s)), 7.5dvh); }
+        .edition { font-size: min(clamp(var(--s), 3.5cqi, calc(2 * var(--s))), 3.2dvh); }
+        .paper svg, .composition { width: auto; height: min(calc(100% - var(--s)), 100cqi); min-width: 0; min-height: 0; margin-top: 0; }
       }
+      /* Wider than 4:3: paper and gallery side by side. Around that shape the two arrangements give
+         figures of about the same size, so this is where they swap. */
+      @media (min-width: 1100px) and (min-aspect-ratio: 4/3) {
+        .panels { grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); }
+        .panels > * { grid-template-rows: auto clamp(calc(1.8 * var(--s)), 2.5vw, calc(3.6 * var(--s))) minmax(0, 1fr); }
+        .gallery { border-top: 0; border-left: 1px solid; }
+      }
+      /* Short windows: the column tightens before the page has to scroll. */
+      @media (min-width: 1100px) and (max-height: 620px) {
+        main {
+          --logo-w: min(calc(var(--side) - 2 * var(--pad)), max(52dvh, calc(18 * var(--s))));
+          --column: calc(var(--logo-h) + 17.25 * var(--s));
+        }
+        .logo-stage { padding-block: calc(1.5 * var(--s)) var(--s); }
+        .authors { grid-template-columns: auto auto; column-gap: 2em; }
+        .resources { margin-top: var(--s); }
+        footer { gap: calc(.8 * var(--s)); padding-block: calc(1.25 * var(--s)); }
+      }
+      /* The gallery title hugs its text, so composition.js can carry it onto the gallery's heading. */
+      .gallery h2 { justify-self: start; }
     </style>
   </head>
   <body>
@@ -123,23 +165,23 @@
       <header>
         <h1 class="logo-stage"><img src="/projects/lism/logo.svg" alt="LiSM" /></h1>
         <ul class="authors" aria-label="Authors">
-          <li>Pengwei Wang</li>
+          <li><a href="/" aria-label="Pengwei Wang, homepage">Pengwei Wang</a></li>
           <li>José Morano</li>
           <li>Botond Fazekas</li>
           <li>Hrvoje Bogunović</li>
         </ul>
         <div class="resources">
-          <a href="https://arxiv.org">arXiv</a>
-          <a href="https://github.com">GitHub</a>
-          <a href="https://huggingface.co">Hugging Face</a>
+          <a href="https://arxiv.org/abs/2611.33037">arXiv</a>
+          <a href="https://github.com/penway/LiSM">GitHub</a>
+          <a href="https://huggingface.co/penway47/LiSM">Hugging Face</a>
         </div>
       </header>
       <div class="panels">
-        <section class="paper" tabindex="0" aria-labelledby="paper-title">
+        <a class="paper" href="./paper/" aria-labelledby="paper-title">
           <h2 id="paper-title">Linear Probes can Guide</h2>
           <p class="edition">Director’s Cut: an HTML paper</p>
           <svg viewBox="0 -11.25 335 335" role="img" aria-label="LiSM trajectory through projected cat and dog features"></svg>
-        </section>
+        </a>
         <a class="gallery" href="./gallery/">
           <h2>Gallery</h2>
           <div class="composition" aria-hidden="true"></div>
@@ -174,20 +216,39 @@
         const logo = create({
           canvas, width: stage.clientWidth, height: stage.clientHeight,
           markWidth: () => mark.getBoundingClientRect().width, setStyle: false,
+          // The mark is centred on tall windows and sits at the left on wide ones.
+          centerX: () => {
+            const box = mark.getBoundingClientRect();
+            return (box.left + box.width / 2 - stage.getBoundingClientRect().left) / stage.clientWidth;
+          },
+          // The stage has more room above the mark than below, so the mark is not at its middle.
+          centerY: () => {
+            const box = mark.getBoundingClientRect();
+            return (box.top + box.height / 2 - stage.getBoundingClientRect().top) / stage.clientHeight;
+          },
         });
         logo.startX = logo.offscreenStartX();
         logo.render(0, "anim");
         mark.after(canvas);
-        const observer = new ResizeObserver(() => {
-          logo.resize(stage.clientWidth, stage.clientHeight);
-          if (logo.t === logo.END) logo.render(logo.END, "rest");
-        });
+        const refit = () => logo.resize(stage.clientWidth, stage.clientHeight);
+        const observer = new ResizeObserver(refit);
         observer.observe(stage);
+        // Zoom can change the pixel density without changing the stage's size.
+        addEventListener("resize", refit);
+        // The last frame is the flat logo, drawn as a raster. Hand over to the SVG underneath, which
+        // stays sharp at any zoom: fade the canvas out and remove it.
+        function handOver() {
+          observer.disconnect();
+          removeEventListener("resize", refit);
+          canvas.animate({ opacity: [1, 0] }, { duration: 200, easing: "ease-out" }).finished
+            .then(() => canvas.remove());
+        }
         const start = performance.now();
         function frame(now) {
           const t = (now - start) / 1000;
           if (t >= logo.END) {
             logo.render(logo.END, "rest");
+            handOver();
             return;
           }
           logo.render(t, "anim");

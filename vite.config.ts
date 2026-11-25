@@ -13,7 +13,7 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           const url = new URL(req.url || "/", "http://localhost");
-          if (url.pathname === "/lism" || url.pathname === "/lism/gallery") {
+          if (url.pathname === "/lism" || url.pathname === "/lism/gallery" || url.pathname === "/lism/paper") {
             res.writeHead(308, { Location: url.pathname + "/" + url.search }).end();
             return;
           }
@@ -24,7 +24,7 @@ export default defineConfig({
       generateBundle: {
         order: "post",
         handler(_, bundle) {
-          for (const page of ["lism/index.html", "lism/gallery/index.html"]) {
+          for (const page of ["lism/index.html", "lism/gallery/index.html", "lism/paper/index.html"]) {
             const source = "projects/" + page;
             const html = bundle[source];
             if (html?.type !== "asset") this.error("Missing LiSM page: " + source);
@@ -62,7 +62,7 @@ export default defineConfig({
   build: {
     copyPublicDir: false,
     rolldownOptions: {
-      input: ["index.html", "projects/lism/index.html", "projects/lism/gallery/index.html"],
+      input: ["index.html", "projects/lism/index.html", "projects/lism/gallery/index.html", "projects/lism/paper/index.html"],
     },
   },
   server: {

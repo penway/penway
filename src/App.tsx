@@ -16,7 +16,7 @@ const affiliations = [
   },
   {
     name: "Bogunović Lab",
-    href: "https://bogunovic.cynapse.at",
+    href: "https://bogunovic-lab.cynapse.at/",
   },
 ];
 

@@ -4,10 +4,53 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gallery · LiSM</title>
 <link rel="stylesheet" href="./gallery.css">
-<header><a href="../" aria-label="Back to LiSM"><img src="/projects/lism/logo.svg" alt="LiSM"></a><h1>Gallery</h1></header>
+<link rel="preload" href="/projects/lism/ClashDisplay-Medium.ttf" as="font" type="font/ttf" crossorigin>
+<script>
+  // Columns follow the wall's width: two on phones, then about one per 320px, from four up to six.
+  // The page stops widening at 2560px (gallery.css). Shared by gallery.js and the arrival tile below.
+  window.lismWallColumns = () => {
+    const width = Math.min(document.documentElement.clientWidth, 2560);
+    return width <= 650 ? 2 : Math.max(4, Math.min(6, Math.floor(width / 320)));
+  };
+  // Arriving from the LiSM page's grid (composition.js), which has already moved its image, logo and
+  // title to where this page draws them. Everything else starts hidden and fades in (gallery.css).
+  if (/^\d{4}$/.test(new URLSearchParams(location.search).get("image") || "")) document.documentElement.classList.add("arriving");
+</script>
+<header><a href="../" aria-label="Back to LiSM"><img src="/projects/lism/logo.svg" alt="LiSM"></a><p class="hint" hidden></p><h1>Gallery</h1></header>
 <main aria-label="Image gallery"></main>
+<script>
+  // The arriving image takes the top-left tile in the very first frame, before gallery.js has built the
+  // wall; gallery.js adopts this tile. The image is the LiSM page's own, so it is already cached.
+  (() => {
+    const id = new URLSearchParams(location.search).get("image");
+    if (!/^\d{4}$/.test(id || "")) return;
+    const main = document.querySelector("main");
+    for (let i = 0; i < window.lismWallColumns(); i++) {
+      const column = document.createElement("div");
+      column.className = "column";
+      main.append(column);
+    }
+    const tile = document.createElement("button");
+    tile.className = "photo arrival";
+    const image = new Image(256, 256);
+    image.decoding = "sync";
+    image.alt = "";
+    image.src = "/projects/lism/composition/" + id + ".webp";
+    tile.append(image);
+    main.firstElementChild.append(tile);
+    // Show nothing until the carried image, the logo and the heading's font are ready, so the first frame
+    // drawn is the LiSM page's last one, not a grey tile or a fallback font. Until then the browser keeps
+    // showing the LiSM page's last frame. Never wait more than 1.5s.
+    const ready = [image.decode(), document.querySelector("header img").decode(), document.fonts.load("500 32px Clash")];
+    window.lismLanded = Promise.race([
+      Promise.all(ready.map(step => step.catch(() => {}))),
+      new Promise(resolve => setTimeout(resolve, 1500)),
+    ]).then(() => document.documentElement.classList.add("landed"));
+  })();
+</script>
 <dialog aria-label="Explore related images">
   <button class="close" aria-label="Return to gallery" autofocus>×</button>
+  <p class="controls"></p>
   <div class="cross">
     <div class="viewer-caption" role="status" aria-label="Subject and condition" aria-atomic="true">
       <span class="flap"></span>
